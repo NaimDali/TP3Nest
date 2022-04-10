@@ -1,35 +1,26 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { PremierModule } from './premier/premier.module';
-import { TodoModule } from './todo/todo.module';
-import { ConfigModule } from '@nestjs/config';
-import { devConfig } from './config/dev.config';
-import { prodConfig } from './config/prod.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TodoEntity } from './todo/Entity/todo.entity';
-import { Todo } from './todo/Model/todo.model';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { ManagingModule } from './cv/managing.module';
 
 @Module({
   imports: [
-    PremierModule,
-    TodoModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-      load: [process.env.NODE_ENV == 'development' ? devConfig : prodConfig],
-    }),
     TypeOrmModule.forRoot({
-      type: 'mysql',
+      type: 'postgres',
       host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: 'gl322',
-      autoLoadEntities: true,
-      synchronize: true,
-      debug: true,
+      port: 5432,
+      username: 'postgres',
+      password: 'pass123',
+      database: 'postgres',
+      autoLoadEntities: true, //load modules automatically instead of specifying the entities array
+      synchronize: true, //automatically generates a SQL table from all classes with @entity decorator but only for development only disable it in production
+      //synchronizes the typeORM entities with the database every time
     }),
+
+    ManagingModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [AppService],
 })
 export class AppModule {}
